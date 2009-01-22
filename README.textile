@@ -1,0 +1,3 @@
+h1. Git-cal
+
+Will generate html-report from git repository formatted as a calendar.
