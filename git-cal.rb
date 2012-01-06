@@ -1,5 +1,9 @@
 #! /usr/bin/env ruby
+require 'rubygems'
+require 'bundler/setup'
 
+
+require 'grit'
 require 'erb'
 
 log = `git-log --pretty=format:'%an|%at|%s'`.split("\n").map do |line|
