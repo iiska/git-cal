@@ -2,7 +2,6 @@
 require 'rubygems'
 require 'bundler/setup'
 
-
 require 'grit'
 require 'yaml'
 
@@ -22,6 +21,11 @@ Dir.glob(path.to_s) do |s|
 end
 
 day = Time.parse(ARGV[0])
+@commits = []
 @repos.each do |r|
-  p r.log('master', nil, :since => day, :until => day+24*3600)
+  @commits += r.log('master', nil, :since => day, :until => day+24*3600)
+end
+
+@commits.each do |c|
+  puts "%s\n%s\n\n" % [c.author_string, c.message]
 end
