@@ -5,14 +5,22 @@ require 'bundler/setup'
 
 require 'grit'
 require 'erb'
+require 'yaml'
 
-log = `git-log --pretty=format:'%an|%at|%s'`.split("\n").map do |line|
-  items = line.split('|')
-  {:author => items[0], :timestamp => items[1], :message => items[2]}
+@repos = []
+
+def read_config
+  config_file = ['~/.gitcalrc', './config.yml'].select{|s|File.exists?(s)}.first
+  File.open(config_file, 'r') do |f|
+    @config = YAML.load(f.read)
+  end
+  @config['local_repos'].each do |r|
+    @repos << Grit::Repo.new(r)
+  end
 end
 
-template = File.open("template.html.erb"){|f| f.read}
-
-rhtml = ERB.new(template)
-
-puts rhtml.result
+read_config
+day = Time.parse(ARGV[0])
+@repos.each do |r|
+  p r.log('master', :since => day, :until => day)
+end
