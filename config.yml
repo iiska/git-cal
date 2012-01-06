@@ -1,2 +1,1 @@
-local_repos:
-  - ./
+local_repos_dir: '~/src'

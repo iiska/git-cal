@@ -4,23 +4,24 @@ require 'bundler/setup'
 
 
 require 'grit'
-require 'erb'
 require 'yaml'
-
-@repos = []
 
 def read_config
   config_file = ['~/.gitcalrc', './config.yml'].select{|s|File.exists?(s)}.first
   File.open(config_file, 'r') do |f|
     @config = YAML.load(f.read)
   end
-  @config['local_repos'].each do |r|
-    @repos << Grit::Repo.new(r)
-  end
 end
 
 read_config
+
+path = Pathname.new(@config['local_repos_dir']).join('**/.git').expand_path
+@repos = []
+Dir.glob(path.to_s) do |s|
+  @repos << Grit::Repo.new(Pathname.new(s).parent.to_s)
+end
+
 day = Time.parse(ARGV[0])
 @repos.each do |r|
-  p r.log('master', :since => day, :until => day)
+  p r.log('master', nil, :since => day, :until => day+24*3600)
 end
